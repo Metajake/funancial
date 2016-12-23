@@ -1,0 +1,8 @@
+{
+  "galaxy.meteor.com": {
+    "env": {
+      "ROOT_URL": "fun.jayno.co",
+      "MONGO_URL": "mongodb://jayno:dbUser18@ds139448.mlab.com:39448/funancial"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+<body>
+  <div class="container">
+      <select id="nav" title="nav-select">
+          <option value="amount_card">New Card</option>
+          <option value="goals">Goals</option>
+      </select>
+
+      <div>
+          {{> Template.dynamic template=page }}
+      </div>
+      <!--<canvas id="myChart"></canvas>-->
+  </div>
+</body>
+
+<template name="amount_card">
+    <header>
+        <h1>Create a Card:</h1>
+    </header>
+    <form class="new-amount">
+        <input type="text" name="text" placeholder="Type to add new card" />
+    </form>
+</template>
+
+<template name="goals">
+    <header>
+        <h1>Goals</h1>
+    </header>
+    <ul>
+        {{#each goal_amounts}}
+            {{> goal_amount}}
+        {{/each}}
+    </ul>
+</template>
+
+<template name="goal_amount">
+    <li>{{amount}}</li>
+</template>
