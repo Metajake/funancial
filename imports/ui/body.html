@@ -1,23 +1,42 @@
 <body>
   <div class="container">
       <select id="nav" title="nav-select">
-          <option value="amount_card">New Card</option>
+          <option value="transaction_card">New Transaction</option>
           <option value="goals">Goals</option>
+          <option value="accounts">Accounts</option>
+          <option value="transactions">Transactions</option>
       </select>
 
       <div>
           {{> Template.dynamic template=page }}
       </div>
-      <!--<canvas id="myChart"></canvas>-->
   </div>
 </body>
 
 <template name="amount_card">
     <header>
-        <h1>Create a Card:</h1>
+        <h1>Create an Amount:</h1>
     </header>
     <form class="new-amount">
-        <input type="text" name="text" placeholder="Type to add new card" />
+        <select name="type" id="amount-type" required>
+            <option value="">Select Type</option>
+            <option value="income">Income</option>
+            <option value="spend">Spend</option>
+            <option value="save">Save</option>
+        </select>
+
+        {{#if isSavings}}
+            <select name="transacted" id="amount-target" required>
+                {{#each goals}}
+                    <option value="{{name}}">{{name}}</option>
+                {{/each}}
+            </select>
+
+        {{/if}}
+
+        <input type="text" name="amount" placeholder="Amount" required/>
+
+        <button type="submit">Submit</button>
     </form>
 </template>
 
@@ -25,13 +44,46 @@
     <header>
         <h1>Goals</h1>
     </header>
+    <form class="new-goal">
+        <input type="text" name="amount" placeholder="Amount" required/>
+        <input type="text" name="name" placeholder="Name of Goal" required/>
+        <button type="submit">Add Goal</button>
+    </form>
     <ul>
-        {{#each goal_amounts}}
-            {{> goal_amount}}
+        {{#each goals}}
+            {{> amount}}
+        {{/each}}
+    </ul>
+    <div id="chart_div"></div>
+</template>
+
+<template name="accounts">
+    <header>
+        <h1>Accounts</h1>
+    </header>
+    <form class="new-account">
+        <input type="text" name="amount" placeholder="Amount" required/>
+        <input type="text" name="name" placeholder="Name of Goal" required/>
+        <button type="submit">Add Account</button>
+    </form>
+    <ul>
+        {{#each accounts}}
+            {{> amount}}
         {{/each}}
     </ul>
 </template>
 
-<template name="goal_amount">
-    <li>{{amount}}</li>
+<template name="transactions">
+    <header>
+        <h1>Transactions</h1>
+    </header>
+    <ul>
+        {{#each transactions}}
+            <li>{{type}}: {{amount}} {{transacted}}<button class="delete">&times;</button></li>
+        {{/each}}
+    </ul>
+</template>
+
+<template name="amount">
+    <li>{{name}}: {{amount}} {{createdAt}}<button class="delete">&times;</button></li>
 </template>
