@@ -11,6 +11,6 @@ export const drawChart = function(canvas, nodes) {
     };
 
     // Instantiate and draw our chart, passing in some options.
-    const chart = new google.visualization.LineChart(document.getElementById(canvas));
+    const chart = new google.visualization.ColumnChart(document.getElementById(canvas));
     chart.draw(data, options);
 };

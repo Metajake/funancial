@@ -5,6 +5,7 @@
           <option value="goals">Goals</option>
           <option value="accounts">Accounts</option>
           <option value="transactions">Transactions</option>
+          <option value="categories">Expenditure Categories</option>
       </select>
 
       <div>
@@ -13,7 +14,7 @@
   </div>
 </body>
 
-<template name="amount_card">
+<template name="transaction_card">
     <header>
         <h1>Create an Amount:</h1>
     </header>
@@ -25,14 +26,7 @@
             <option value="save">Save</option>
         </select>
 
-        {{#if isSavings}}
-            <select name="transacted" id="amount-target" required>
-                {{#each goals}}
-                    <option value="{{name}}">{{name}}</option>
-                {{/each}}
-            </select>
-
-        {{/if}}
+        {{> Template.dynamic template=category}}
 
         <input type="text" name="amount" placeholder="Amount" required/>
 
@@ -40,10 +34,27 @@
     </form>
 </template>
 
+<template name="save">
+    <select name="transacted" id="amount-target" required>
+        {{#each goals}}
+            <option value="{{name}}">{{name}}</option>
+        {{/each}}
+    </select>
+</template>
+
+<template name="spend">
+    <select name="transacted" id="amount-target" required>
+        {{#each categories}}
+            <option value="{{name}}">{{name}}</option>
+        {{/each}}
+    </select>
+</template>
+
 <template name="goals">
     <header>
         <h1>Goals</h1>
     </header>
+    <h3>New Goal:</h3>
     <form class="new-goal">
         <input type="text" name="amount" placeholder="Amount" required/>
         <input type="text" name="name" placeholder="Name of Goal" required/>
@@ -51,10 +62,11 @@
     </form>
     <ul>
         {{#each goals}}
-            {{> amount}}
+            {{> amount }}
         {{/each}}
     </ul>
     <div id="chart_div"></div>
+    {{> fullcalendar fcOptions}}
 </template>
 
 <template name="accounts">
@@ -68,7 +80,22 @@
     </form>
     <ul>
         {{#each accounts}}
-            {{> amount}}
+            <li>{{name}}: {{amount}} {{createdAt}}<button class="delete">&times;</button></li>
+        {{/each}}
+    </ul>
+</template>
+
+<template name="categories">
+    <header>
+        <h1>Expenditure Categories</h1>
+    </header>
+    <form class="new-category">
+        <input type="text" name="name" placeholder="Name of Category" required/>
+        <button type="submit">Add Account</button>
+    </form>
+    <ul>
+        {{#each categories}}
+            <li>{{name}} current total: {{currentTotal}}<button class="delete">&times;</button></li>
         {{/each}}
     </ul>
 </template>
@@ -85,5 +112,5 @@
 </template>
 
 <template name="amount">
-    <li>{{name}}: {{amount}} {{createdAt}}<button class="delete">&times;</button></li>
+    <li class="item"><span class="name">{{name}}</span>: {{amount}} total: {{total}} created: {{createdAt}}<button class="delete">&times;</button></li>
 </template>
