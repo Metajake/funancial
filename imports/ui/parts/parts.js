@@ -1,7 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Amounts } from '../../api/amounts.js';
 import { Transactions } from '../../api/amounts.js';
-import { Records } from '../../api/amounts.js';
 import { drawChart } from '../charts.js';
 import './parts.html';
 
@@ -154,7 +153,7 @@ Template.transactions.events({
 
 Template.records.helpers({
     records() {
-        const records = Records.find({type:'monthly-record'});
+        const records = {type:"monthy", date: "010101"};
         return records;
     }
 });

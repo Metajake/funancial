@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Amounts } from '../api/amounts.js';
 import { Transactions } from '../api/amounts.js';
-import { Records } from '../api/amounts.js';
 import './body.html';
 import './parts/parts.js';
 
@@ -16,29 +15,6 @@ Template.body.onCreated( function(){
 
 Template.body.rendered = function(){
     $('#nav').val(Session.get("currentPageId"));
-
-    currentFC = $('#clock').fullCalendar('getDate').stripTime();
-
-    const currentFCDate = $('#clock').fullCalendar('getDate').stripTime();
-
-    const dbRecordsSettings = Records.find({settings: {$exists:true}});
-    // log("db records with Settings: "+dbRecordsSettings.count());
-    let settings = {currentDate:[]};
-    dbRecordsSettings.forEach(function(dbRecord) {
-        settings = dbRecord.settings;
-    });
-    if(currentFCDate.format() !== settings.currentDate){
-        Records.update("7T8CYnHwEmJBzChvK", {
-            settings: {currentDate: currentFCDate.format(), currentYear: currentFCDate.year(), currentMonth: currentFCDate.month(), currentWeek: currentFCDate.week(), currentDay: currentFCDate.day()},
-        });
-    }
-
-    //!! THIS NEEDS TO BE FIXED. IT IS FIRING EVEN IF THERE IS ONE MONTHLY RECORD WITH THE CURRENT DATE
-    let currentMonthlyRecord = Records.find({type: 'monthly-record', date: currentFCDate.format('MM YYYY')});
-    if(!currentMonthlyRecord.count()){
-        log("inserting monthly record");
-        Records.insert({type:'monthly-record', date: currentFCDate.format('MM YYYY'), categories: {}})
-    }
 };
 
 Template.body.helpers({
@@ -76,6 +52,7 @@ Template.transaction_card.events({
         const target = event.target;
         const cardAmount = Number(target.amount.value);
         const type = target.type.value;
+        const note = target.note.value;
         if(type == 'save' || type == 'spend'){
             transacted = target.transacted.value;
             effector = Amounts.find({name:transacted});
@@ -89,21 +66,11 @@ Template.transaction_card.events({
                         });
                     });
                 }else if(type == 'spend'){
-                    let effectingName = '';
                     effector.forEach(function(effecting){
                         Amounts.update(effecting._id, {
                             $set: {currentTotal : effecting.currentTotal += cardAmount }
                         });
-                        effectingName = effecting.name;
                     });
-                    // let currentMonthRecord = Records.find({date:currentFC.format("MM YYYY")});
-                    // let updatedCategories = { $set: {} };
-                    // updatedCategories.$set[effectingName] += cardAmount;
-                    // checkCount(currentMonthRecord,
-                    //     currentMonthRecord.forEach(function(month) {
-                    //         Records.update(month._id, updatedCategories);
-                    //     })
-                    // );
                 }
             }
             target.transacted.value = '';
@@ -111,10 +78,12 @@ Template.transaction_card.events({
         Transactions.insert({
             cardAmount,
             type,
+            note,
             transacted,
             createdAt: new Date(),
         });
         target.amount.value = '';
+        target.note.value = '';
         target.type.value = '';
         template.transactionCategory.set('');
     },
