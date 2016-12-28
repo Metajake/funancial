@@ -1,12 +1,16 @@
 <body>
   <div class="container">
-      <select id="nav" title="nav-select">
-          <option value="transaction_card">New Transaction</option>
-          <option value="goals">Goals</option>
-          <option value="accounts">Accounts</option>
-          <option value="transactions">Transactions</option>
-          <option value="categories">Expenditure Categories</option>
-      </select>
+      <header>
+          <select id="nav" title="nav-select">
+              <option value="transaction_card">New Transaction</option>
+              <option value="goals">Goals</option>
+              <option value="accounts">Accounts</option>
+              <option value="transactions">Transactions</option>
+              <option value="categories">Expenditure Categories</option>
+              <option value="records">Records</option>
+          </select>
+          {{> fullcalendar id="clock"}}
+      </header>
 
       <div>
           {{> Template.dynamic template=page }}

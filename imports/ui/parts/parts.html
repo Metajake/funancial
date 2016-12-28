@@ -14,7 +14,7 @@
         {{/each}}
     </ul>
     <div id="chart_div"></div>
-    {{> fullcalendar fcOptions}}
+    {{> fullcalendar fcOptions id="goal-calendar"}}
 </template>
 
 <template name="accounts">
@@ -54,7 +54,20 @@
     </header>
     <ul>
         {{#each transactions}}
-            <li>{{type}}: {{amount}} {{transacted}}<button class="delete">&times;</button></li>
+            <li>{{type}}: {{cardAmount}} transacted: {{transacted}}<button class="delete">&times;</button></li>
+        {{/each}}
+    </ul>
+</template>
+
+<template name="records">
+    <h1>Records</h1>
+    <h2>Monthy Records</h2>
+    <ul>
+        {{#each records}}
+            <li>type: {{type}} date: {{date}}</li>
+            <ul>
+                {{categories.key}}
+            </ul>
         {{/each}}
     </ul>
 </template>

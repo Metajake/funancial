@@ -1,5 +1,8 @@
 import { Template } from 'meteor/templating';
 import { Amounts } from '../../api/amounts.js';
+import { Transactions } from '../../api/amounts.js';
+import { Records } from '../../api/amounts.js';
+import { drawChart } from '../charts.js';
 import './parts.html';
 
 Template.goals.helpers({
@@ -68,7 +71,7 @@ Template.goals.events({
         inputs.forEach(function(input){
             dates.push([
                 input.createdAt.toLocaleDateString('en-US', {month: "2-digit", day: "2-digit", year: "2-digit"}),
-                input.amount
+                input.cardAmount
             ]);
         });
         google.charts.load('current', {'packages':['corechart']});
@@ -147,4 +150,11 @@ Template.transactions.events({
     'click .delete'() {
         Transactions.remove(this._id);
     },
+});
+
+Template.records.helpers({
+    records() {
+        const records = Records.find({type:'monthly-record'});
+        return records;
+    }
 });
