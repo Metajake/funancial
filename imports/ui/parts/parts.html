@@ -1,22 +1,3 @@
-<template name="goals">
-    <header>
-        <h1>Goals</h1>
-    </header>
-    <h3>New Goal:</h3>
-    <form class="new-goal">
-        <input type="text" name="amount" placeholder="Amount" required/>
-        <input type="text" name="name" placeholder="Name of Goal" required/>
-        <button type="submit">Add Goal</button>
-    </form>
-    <ul>
-        {{#each goals}}
-            {{> amount }}
-        {{/each}}
-    </ul>
-    <div id="chart_div"></div>
-    {{> fullcalendar fcOptions id="goal-calendar"}}
-</template>
-
 <template name="accounts">
     <header>
         <h1>Accounts</h1>
@@ -69,6 +50,18 @@
     </ul>
 </template>
 
-<template name="amount">
-    <li class="item"><span class="name">{{name}}</span>: {{amount}} total: {{total}} created: {{createdAt}}<button class="delete">&times;</button></li>
+<template name="save">
+    <select name="transacted" id="amount-target" required>
+        {{#each goals}}
+            <option value="{{name}}">{{name}}</option>
+        {{/each}}
+    </select>
+</template>
+
+<template name="spend">
+    <select name="transacted" id="amount-target" required>
+        {{#each categories}}
+            <option value="{{name}}">{{name}}</option>
+        {{/each}}
+    </select>
 </template>

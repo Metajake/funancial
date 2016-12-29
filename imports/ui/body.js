@@ -6,8 +6,6 @@ import { Transactions } from '../api/amounts.js';
 import './body.html';
 import './parts/parts.js';
 
-let currentFC = null;
-
 Template.body.onCreated( function(){
     Session.setDefaultPersistent("currentPageId", "transaction_card");
     this.currentTemplate = new ReactiveVar(Session.get("currentPageId"));
@@ -80,7 +78,11 @@ Template.transaction_card.events({
             type,
             note,
             transacted,
-            createdAt: new Date(),
+            createdOn: new Date(),
+            month: moment().format("YYYY MM"),
+            calendarDay: moment().format("YYYY-MM-DD"),
+            GCDay: moment().format("MM/DD/YY"),
+            week: moment().format("WW"),
         });
         target.amount.value = '';
         target.note.value = '';
@@ -89,16 +91,68 @@ Template.transaction_card.events({
     },
 });
 
-Template.save.helpers({
+Template.goals.helpers({
     goals() {
         const goals = Amounts.find({type:'goal'});
         return goals
     },
+    fcOptions: function(){
+        let transactions = Transactions.find({type:'save'});
+        let goalEvents = []
+        transactions.forEach(function(transaction){
+            goalEvents.push({title : transaction.transacted, start : transaction.calendarDay})
+        });
+        return {
+            dayClick: function(){
+                // log("a day has been clicked!");
+                // $('.fc').fullCalendar('next');
+            },
+            events: goalEvents,
+        }
+    },
 });
 
-Template.spend.helpers({
-    categories(){
-        const categories = Amounts.find({type: 'category' });
-        return categories
+Template.goals.rendered = function(){
+
+};
+
+Template.goals.events({
+    'submit .new-goal'(event){
+        event.preventDefault();
+        const target = event.target;
+        const amount = target.amount.value;
+        const name = target.name.value;
+        const type = "goal";
+        const total = 0;
+
+        Amounts.insert({
+            amount,
+            name,
+            type,
+            total,
+            createdOn: new Date(),
+            month: moment().format("YYYY MM"),
+            week: moment().format("WW"),
+        });
+
+        target.amount.value = '';
+        target.name.value = '';
+    },
+    'click .item'(event){
+        const inputs = Transactions.find({type:'save', transacted:this.name});
+        dates = [
+            ['Year','Amount']
+        ];
+        inputs.forEach(function(input){
+            dates.push([
+                input.GCDay,
+                input.cardAmount
+            ]);
+        });
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(function(){drawChart('chart_div',dates)});
+    },
+    'click .delete'() {
+        Amounts.remove(this._id);
     }
 });

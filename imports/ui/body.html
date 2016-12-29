@@ -1,6 +1,6 @@
 <body>
   <div class="container">
-      <header>
+      <header class="template-nav">
           <select id="nav" title="nav-select">
               <option value="transaction_card">New Transaction</option>
               <option value="goals">Goals</option>
@@ -12,7 +12,7 @@
           {{> fullcalendar id="clock"}}
       </header>
 
-      <div>
+      <div class="site-content">
           {{> Template.dynamic template=page }}
       </div>
   </div>
@@ -39,18 +39,25 @@
     </form>
 </template>
 
-<template name="save">
-    <select name="transacted" id="amount-target" required>
+<template name="goals">
+    <header>
+        <h1>Goals</h1>
+    </header>
+    <h3>New Goal:</h3>
+    <form class="new-goal">
+        <input type="text" name="amount" placeholder="Amount" required/>
+        <input type="text" name="name" placeholder="Name of Goal" required/>
+        <button type="submit">Add Goal</button>
+    </form>
+    <ul>
         {{#each goals}}
-            <option value="{{name}}">{{name}}</option>
+            {{> amount }}
         {{/each}}
-    </select>
+    </ul>
+    {{> fullcalendar fcOptions id="goal-calendar"}}
+    <div id="chart_div"></div>
 </template>
 
-<template name="spend">
-    <select name="transacted" id="amount-target" required>
-        {{#each categories}}
-            <option value="{{name}}">{{name}}</option>
-        {{/each}}
-    </select>
+<template name="amount">
+    <li class="item"><span class="name">{{name}}</span>: {{amount}} total: {{total}} created: {{createdOn}}<button class="delete">&times;</button></li>
 </template>
