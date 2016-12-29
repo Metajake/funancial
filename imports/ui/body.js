@@ -150,7 +150,7 @@ Template.goals.events({
             ]);
         });
         google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(function(){drawChart('chart',dates)});
+        google.charts.setOnLoadCallback(function(){drawChart( new google.visualization.ColumnChart(document.getElementById('chart')), dates )});
     },
     'click .delete'() {
         Amounts.remove(this._id);

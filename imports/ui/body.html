@@ -32,7 +32,7 @@
 
         {{> Template.dynamic template=category}}
 
-        <input type="text" name="amount" placeholder="Amount" required/>
+        <input type="number" name="amount" placeholder="Amount" required/>
         <input type="text" name="note" placeholder="Note" />
 
         <button type="submit">Submit</button>
@@ -45,7 +45,7 @@
     </header>
     <h3>New Goal:</h3>
     <form class="new-goal">
-        <input type="text" name="amount" placeholder="Amount" required/>
+        <input type="number" name="amount" placeholder="Amount" required/>
         <input type="text" name="name" placeholder="Name of Goal" required/>
         <button type="submit">Add Goal</button>
     </form>
@@ -54,7 +54,7 @@
             {{> amount }}
         {{/each}}
     </ul>
-    <div id="chart"></div>
+    <div id="chart" class="chart"></div>
     {{> fullcalendar fcOptions id="goal-calendar"}}
 </template>
 

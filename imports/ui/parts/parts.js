@@ -81,20 +81,17 @@ Template.categories.events({
                 catSpend[category.name].push(catMonthlySpend.cardAmount);
             })
         });
-        log(catSpend);
-        // let thisMonthSpendings = Transactions.find({month: currentMonth, type: 'category'});
-        let amounts = [
+        let currentMonthAmounts = [
             ['Category','Amount']
         ];
         for (cat in catSpend){
-            amounts.push([
+            currentMonthAmounts.push([
                 cat,
                 catSpend[cat].reduce((a, b) => a + b, 0)
             ]);
         };
-        log(amounts);
-        // google.charts.load('current', {'packages':['corechart']});
-        // google.charts.setOnLoadCallback(function(){drawChart('chart',dates)});
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(function(){drawChart( new google.visualization.PieChart(document.getElementById('monthly-expense-chart')), currentMonthAmounts )});
     },
     'click .delete'() {
         Amounts.remove(this._id);
@@ -115,14 +112,14 @@ Template.transactions.events({
     },
 });
 
-Template.save.helpers({
+Template.save.helpers({ //IS THIS USED?
     goals() {
         const goals = Amounts.find({type:'goal'});
         return goals
     },
 });
 
-Template.spend.helpers({
+Template.spend.helpers({ //IS THIS USED?
     categories(){
         const categories = Amounts.find({type: 'category' });
         return categories
@@ -130,12 +127,6 @@ Template.spend.helpers({
 });
 
 Template.records.helpers({
-    CM(){
-        (function(){let CY = moment().format("YYYY");
-        let CM = moment().format("MM");
-        log(CM);});
-        return
-    },
     records() {
         const records = [{type:"monthy", date: "010101"}]   ;
         return records;

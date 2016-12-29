@@ -3,7 +3,7 @@
         <h1>Accounts</h1>
     </header>
     <form class="new-account">
-        <input type="text" name="amount" placeholder="Amount" required/>
+        <input type="number" name="amount" placeholder="Amount" required/>
         <input type="text" name="name" placeholder="Name of Goal" required/>
         <button type="submit">Add Account</button>
     </form>
@@ -32,6 +32,7 @@
             <li>ITem!</li>
         {{/each}}
     </ul>
+    <div id="monthly-expense-chart" class="chart"></div>
 </template>
 
 <template name="transactions">
