@@ -3,6 +3,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Amounts } from '../api/amounts.js';
 import { Transactions } from '../api/amounts.js';
+import { drawChart } from './charts.js';
 import './body.html';
 import './parts/parts.js';
 
@@ -150,7 +151,7 @@ Template.goals.events({
             ]);
         });
         google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(function(){drawChart('chart_div',dates)});
+        google.charts.setOnLoadCallback(function(){drawChart('chart',dates)});
     },
     'click .delete'() {
         Amounts.remove(this._id);

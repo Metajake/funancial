@@ -1,7 +1,6 @@
 import { Template } from 'meteor/templating';
 import { Amounts } from '../../api/amounts.js';
 import { Transactions } from '../../api/amounts.js';
-import { drawChart } from '../charts.js';
 import './parts.html';
 
 Template.accounts.helpers({
@@ -63,7 +62,7 @@ Template.categories.events({
 
 Template.transactions.helpers({
     transactions() {
-        const transactions = Transactions.find({}, { sort: { createdAt: -1 } });
+        const transactions = Transactions.find({}, { sort: { createdOn: -1 } });
         return transactions
     },
 });
