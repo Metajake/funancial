@@ -36,6 +36,21 @@ Template.categories.helpers({
     categories() {
         return Amounts.find({type:'category'});
     },
+    monthlyCategories() {
+        let currentMonth = moment().format('YYYY MM');
+        let categories = Amounts.find({type:'category'});
+        let catSpend = {};
+        categories.forEach(function(category){
+            catSpend[category.name] = [];
+            let catMonthlySpends = Transactions.find({month: currentMonth, transacted: category.name});
+            catMonthlySpends.forEach(function(catMonthlySpend){
+                catSpend[category.name].push(catMonthlySpend.cardAmount);
+            })
+        });
+        // log(catSpend);
+        let thisMonthSpendings = Transactions.find({month: currentMonth, type: 'category'});
+        return thisMonthSpendings
+    },
 });
 
 Template.categories.events({
@@ -55,9 +70,36 @@ Template.categories.events({
 
         target.name.value = '';
     },
+    'click .cat'(event){
+        let currentMonth = moment().format('YYYY MM');
+        let categories = Amounts.find({type:'category'});
+        let catSpend = {};
+        categories.forEach(function(category){
+            catSpend[category.name] = [];
+            let catMonthlySpends = Transactions.find({month: currentMonth, transacted: category.name});
+            catMonthlySpends.forEach(function(catMonthlySpend){
+                catSpend[category.name].push(catMonthlySpend.cardAmount);
+            })
+        });
+        log(catSpend);
+        // let thisMonthSpendings = Transactions.find({month: currentMonth, type: 'category'});
+        let amounts = [
+            ['Category','Amount']
+        ];
+        for (cat in catSpend){
+            amounts.push([
+                cat,
+                catSpend[cat].reduce((a, b) => a + b, 0)
+            ]);
+        };
+        log(amounts);
+        // google.charts.load('current', {'packages':['corechart']});
+        // google.charts.setOnLoadCallback(function(){drawChart('chart',dates)});
+    },
     'click .delete'() {
         Amounts.remove(this._id);
-    }
+    },
+
 });
 
 Template.transactions.helpers({

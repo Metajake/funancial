@@ -3,7 +3,6 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Amounts } from '../api/amounts.js';
 import { Transactions } from '../api/amounts.js';
-import { drawChart } from './charts.js';
 import './body.html';
 import './parts/parts.js';
 
@@ -99,7 +98,7 @@ Template.goals.helpers({
     },
     fcOptions: function(){
         let transactions = Transactions.find({type:'save'});
-        let goalEvents = []
+        let goalEvents = [];
         transactions.forEach(function(transaction){
             goalEvents.push({title : transaction.transacted, start : transaction.calendarDay})
         });

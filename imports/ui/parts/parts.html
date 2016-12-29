@@ -24,7 +24,12 @@
     </form>
     <ul>
         {{#each categories}}
-            <li>{{name}} current total: {{currentTotal}}<button class="delete">&times;</button></li>
+            <li class="cat">{{name}} current total: {{currentTotal}}<button class="delete">&times;</button></li>
+        {{/each}}
+    </ul>
+    <ul>
+        {{#each monthlyCategories}}
+            <li>ITem!</li>
         {{/each}}
     </ul>
 </template>
