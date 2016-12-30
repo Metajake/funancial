@@ -153,6 +153,7 @@ Template.regularexpenses.rendered = function(){
     Meteor.setTimeout(function(){
         $('#monthlyexpenses').fullCalendar({
             events: getMonthlyDates(),
+            displayEventTime: false,
         });
     }, 300);
 };
