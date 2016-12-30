@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Amounts } from '../../api/amounts.js';
 import { Transactions } from '../../api/amounts.js';
@@ -31,6 +32,32 @@ Template.accounts.events({
         Amounts.remove(this._id);
     }
 });
+
+Template.categories.rendered = function(){
+    Meteor.setTimeout(function(){
+        let currentMonth = moment().format('YYYY MM');
+        let categories = Amounts.find({type:'category'});
+        let catSpend = {};
+        categories.forEach(function(category){
+            catSpend[category.name] = [];
+            let catMonthlySpends = Transactions.find({month: currentMonth, transacted: category.name});
+            catMonthlySpends.forEach(function(catMonthlySpend){
+                catSpend[category.name].push(catMonthlySpend.cardAmount);
+            })
+        });
+        let currentMonthAmounts = [
+            ['Category','Amount']
+        ];
+        for (cat in catSpend){
+            currentMonthAmounts.push([
+                cat,
+                catSpend[cat].reduce((a, b) => a + b, 0)
+            ]);
+        };
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(function(){drawChart( new google.visualization.PieChart(document.getElementById('monthly-expense-chart')), currentMonthAmounts )});
+    }, 250);
+};
 
 Template.categories.helpers({
     categories() {
@@ -71,27 +98,7 @@ Template.categories.events({
         target.name.value = '';
     },
     'click .cat'(event){
-        let currentMonth = moment().format('YYYY MM');
-        let categories = Amounts.find({type:'category'});
-        let catSpend = {};
-        categories.forEach(function(category){
-            catSpend[category.name] = [];
-            let catMonthlySpends = Transactions.find({month: currentMonth, transacted: category.name});
-            catMonthlySpends.forEach(function(catMonthlySpend){
-                catSpend[category.name].push(catMonthlySpend.cardAmount);
-            })
-        });
-        let currentMonthAmounts = [
-            ['Category','Amount']
-        ];
-        for (cat in catSpend){
-            currentMonthAmounts.push([
-                cat,
-                catSpend[cat].reduce((a, b) => a + b, 0)
-            ]);
-        };
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(function(){drawChart( new google.visualization.PieChart(document.getElementById('monthly-expense-chart')), currentMonthAmounts )});
+        log("Category Clicked!");
     },
     'click .delete'() {
         Amounts.remove(this._id);

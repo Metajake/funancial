@@ -60,17 +60,9 @@ Template.transaction_card.events({
                 log("Reduce your Query count to 1");
             }else{
                 if(type == 'save') {
-                    effector.forEach(function (effecting) {
-                        Amounts.update(effecting._id, {
-                            $set: {total: effecting.total += cardAmount}
-                        });
-                    });
+                    setEffected(effector, 'total', cardAmount);
                 }else if(type == 'spend'){
-                    effector.forEach(function(effecting){
-                        Amounts.update(effecting._id, {
-                            $set: {currentTotal : effecting.currentTotal += cardAmount }
-                        });
-                    });
+                    setEffected(effector, 'currentTotal', cardAmount);
                 }
             }
             target.transacted.value = '';
@@ -108,10 +100,6 @@ Template.goals.rendered = function(){
     });
     Meteor.setTimeout(function(){
         $('#goal-calendar').fullCalendar({
-            dayClick: function(){
-                // log("a day has been clicked!");
-                // $('.fc').fullCalendar('next');
-            },
             events: goalEvents,
         });
     }, 250);
@@ -166,7 +154,7 @@ Template.regularexpenses.rendered = function(){
         $('#monthlyexpenses').fullCalendar({
             events: getMonthlyDates(),
         });
-    }, 500);
+    }, 300);
 };
 
 Template.regularexpenses.helpers({
