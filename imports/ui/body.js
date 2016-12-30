@@ -1,8 +1,10 @@
+import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Amounts } from '../api/amounts.js';
 import { Transactions } from '../api/amounts.js';
+import { Dates } from '../api/amounts.js';
 import './body.html';
 import './parts/parts.js';
 
@@ -96,24 +98,23 @@ Template.goals.helpers({
         const goals = Amounts.find({type:'goal'});
         return goals
     },
-    fcOptions: function(){
-        let transactions = Transactions.find({type:'save'});
-        let goalEvents = [];
-        transactions.forEach(function(transaction){
-            goalEvents.push({title : transaction.transacted, start : transaction.calendarDay})
-        });
-        return {
+});
+
+Template.goals.rendered = function(){
+    let transactions = Transactions.find({type:'save'});
+    let goalEvents = [];
+    transactions.forEach(function(transaction){
+        goalEvents.push({title : transaction.transacted, start : transaction.calendarDay})
+    });
+    Meteor.setTimeout(function(){
+        $('#goal-calendar').fullCalendar({
             dayClick: function(){
                 // log("a day has been clicked!");
                 // $('.fc').fullCalendar('next');
             },
             events: goalEvents,
-        }
-    },
-});
-
-Template.goals.rendered = function(){
-
+        });
+    }, 250);
 };
 
 Template.goals.events({
@@ -155,4 +156,47 @@ Template.goals.events({
     'click .delete'() {
         Amounts.remove(this._id);
     }
+});
+
+Template.regularexpenses.onCreated( function() {
+});
+
+Template.regularexpenses.rendered = function(){
+    Meteor.setTimeout(function(){
+        $('#monthlyexpenses').fullCalendar({
+            events: getMonthlyDates(),
+        });
+    }, 500);
+};
+
+Template.regularexpenses.helpers({
+    dates(){
+        let dates = Dates.find({});
+        return dates
+    },
+});
+
+Template.regularexpenses.events({
+    'submit .new-date'(event, template){
+        event.preventDefault();
+        const name = event.target.name.value;
+        const date = event.target.date.value;
+        const amount = event.target.amount.value;
+
+        Dates.insert({
+            name,
+            date,
+            amount,
+        });
+
+        event.target.amount.value = '';
+        event.target.name.value = '';
+        event.target.date.value = '';
+
+        rerenderCalendar('#monthlyexpenses', getMonthlyDates());
+    },
+    'click .delete'() {
+        Dates.remove(this._id);
+        rerenderCalendar('#monthlyexpenses', getMonthlyDates())
+    },
 });

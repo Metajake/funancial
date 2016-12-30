@@ -5,11 +5,12 @@
               <option value="transaction_card">New Transaction</option>
               <option value="goals">Goals</option>
               <option value="accounts">Accounts</option>
+              <option value="regularexpenses">Regular Expenses</option>
               <option value="transactions">Transactions</option>
-              <option value="categories">Expenditure Categories</option>
+              <option value="categories">Expense Categories</option>
               <option value="records">Records</option>
           </select>
-          {{> fullcalendar id="clock"}}
+
       </header>
 
       <div class="site-content">
@@ -55,7 +56,25 @@
         {{/each}}
     </ul>
     <div id="chart" class="chart"></div>
-    {{> fullcalendar fcOptions id="goal-calendar"}}
+    <div id="goal-calendar"></div>
+</template>
+
+<template name="regularexpenses">
+
+    <h1>Monthly Expenses</h1>
+    <form class="new-date">
+        <input type="text" name="name" placeholder="Name of Monthly Expense" required />
+        <input type="number" name="amount" placeholder="Amount of Monthly Expense" required />
+        <input type="number" name="date" placeholder="Date of Monthly Amount" required />
+        <button type="submit" >Add Regular Expense</button>
+    </form>
+    <ul>
+        {{#each dates}}
+            <li>{{name}} on: {{date}} for: {{amount}}<button class="delete">&times;</button></li>
+        {{/each}}
+    </ul>
+
+    <div id="monthlyexpenses"></div>
 </template>
 
 <template name="amount">
