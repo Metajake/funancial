@@ -161,17 +161,41 @@ Template.regularexpenses.onCreated( function() {
 });
 
 Template.regularexpenses.rendered = function(){
+    let month, year;
     Meteor.setTimeout(function(){
         $('#monthlyexpenses').fullCalendar({
             events: getMonthlyDates('bill'),
             displayEventTime: false,
+            viewRender: function(){
+                // log("calendar view rendered");
+            },
+        });
+        $(document).keydown(function(e) {
+            switch(e.which) {
+                case 37: // left
+                    $('#monthlyexpenses').fullCalendar('prev');
+                    year = $('#monthlyexpenses').fullCalendar('getDate').format("YYYY");
+                    month = $('#monthlyexpenses').fullCalendar('getDate').format("MM");
+                    rerenderCalendar('#monthlyexpenses', getMonthlyDates('bill', {year:year,month:month}));
+                    break;
+
+                case 39: // right
+                    $('#monthlyexpenses').fullCalendar('next');
+                    year = $('#monthlyexpenses').fullCalendar('getDate').format("YYYY");
+                    month = $('#monthlyexpenses').fullCalendar('getDate').format("MM");
+                    rerenderCalendar('#monthlyexpenses', getMonthlyDates('bill', {year:year,month:month}));
+                    break;
+
+                default: return; // exit this handler for other keys
+            }
+            e.preventDefault(); // prevent the default action (scroll / move caret)
         });
     }, 300);
 };
 
 Template.regularexpenses.helpers({
     dates(){
-        let dates = Amounts.find({}, {sort: { date: 1 } } );
+        let dates = Amounts.find({type: 'bill'}, {sort: { date: 1 } } );
         return dates
     },
 });
@@ -183,22 +207,24 @@ Template.regularexpenses.events({
         const date = event.target.date.value;
         const amount = event.target.amount.value;
         const type = 'bill';
+        const reoccurring = event.target.reoccurring.checked;
 
         Amounts.insert({
             name,
             date,
             type,
             amount,
+            reoccurring,
         });
 
         event.target.amount.value = '';
         event.target.name.value = '';
         event.target.date.value = '';
 
-        rerenderCalendar('#monthlyexpenses', getMonthlyDates());
+        rerenderCalendar('#monthlyexpenses', getMonthlyDates('bill'));
     },
     'click .delete'() {
         Amounts.remove(this._id);
-        rerenderCalendar('#monthlyexpenses', getMonthlyDates())
+        rerenderCalendar('#monthlyexpenses', getMonthlyDates('bill'))
     },
 });
