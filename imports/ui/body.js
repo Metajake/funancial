@@ -191,6 +191,13 @@ Template.regularexpenses.rendered = function(){
             e.preventDefault(); // prevent the default action (scroll / move caret)
         });
     }, 300);
+    $('#reoccurring').click(function(){
+        if(document.getElementById('reoccurring').checked){
+            $("#bill-date").attr('type', 'number');
+        }else{
+            $("#bill-date").attr('type', 'date');
+        }
+    });
 };
 
 Template.regularexpenses.helpers({

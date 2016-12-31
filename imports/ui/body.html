@@ -62,13 +62,13 @@
     <form class="new-date">
         <input type="text" name="name" placeholder="Name of Monthly Expense" required />
         <input type="number" name="amount" placeholder="Amount of Monthly Expense" required />
-        <input type="number" name="date" placeholder="Date of Monthly Amount" required />
         <label>Reoccurring: <input type="checkbox" name="reoccurring" id="reoccurring"/></label>
+        <input type="date" name="date" id="bill-date" placeholder="Date of Monthly Amount" required />
         <button type="submit" >Add Regular Expense</button>
     </form>
     <ul>
         {{#each dates}}
-            <li>{{name}} on: {{date}} for: {{amount}}<button class="delete">&times;</button></li>
+            <li>{{date}}: {{name}} for: {{amount}}<button class="delete">&times;</button></li>
         {{/each}}
     </ul>
 
