@@ -25,19 +25,15 @@
     </header>
     <form class="new-amount">
         <select name="type" id="amount-type" required>
-            <option value="">Select Type</option>
+            <!--<option value="">Select Type</option>-->
             <option value="income">Income</option>
             <option value="spend">Spend</option>
             <option value="save">Save</option>
-            <option value="bill">Bill Payment</option>
+            <option value="bills">Bill Payment</option>
         </select>
 
         {{> Template.dynamic template=category}}
 
-        <input type="number" name="amount" placeholder="Amount" required/>
-        <input type="text" name="note" placeholder="Note" />
-
-        <button type="submit">Submit</button>
     </form>
 </template>
 
@@ -70,7 +66,7 @@
         <button type="submit" >Add Regular Expense</button>
     </form>
     <ul>
-        {{#each dates}}
+        {{#each bills}}
             <li>{{name}} on: {{date}} for: {{amount}}<button class="delete">&times;</button></li>
         {{/each}}
     </ul>

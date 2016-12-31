@@ -35,12 +35,11 @@ Template.accounts.events({
 
 Template.categories.rendered = function(){
     Meteor.setTimeout(function(){
-        let currentMonth = moment().format('YYYY MM');
         let categories = Amounts.find({type:'category'});
         let catSpend = {};
         categories.forEach(function(category){
             catSpend[category.name] = [];
-            let catMonthlySpends = Transactions.find({month: currentMonth, transacted: category.name});
+            let catMonthlySpends = Transactions.find({createdOn: {$gt:currentMonth.monthBegin,$lt:currentMonth.monthEnd}, transacted: category.name});
             catMonthlySpends.forEach(function(catMonthlySpend){
                 catSpend[category.name].push(catMonthlySpend.cardAmount);
             })
@@ -55,7 +54,7 @@ Template.categories.rendered = function(){
             ]);
         };
         google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(function(){drawChart( new google.visualization.PieChart(document.getElementById('monthly-expense-chart')), currentMonthAmounts )});
+        google.charts.setOnLoadCallback(function(){drawChart('Categories as they relate...', new google.visualization.PieChart(document.getElementById('monthly-expense-chart')), currentMonthAmounts )});
     }, 250);
 };
 
@@ -64,18 +63,17 @@ Template.categories.helpers({
         return Amounts.find({type:'category'});
     },
     monthlyCategories() {
-        let currentMonth = moment().format('YYYY MM');
         let categories = Amounts.find({type:'category'});
         let catSpend = {};
         categories.forEach(function(category){
             catSpend[category.name] = [];
-            let catMonthlySpends = Transactions.find({month: currentMonth, transacted: category.name});
+            let catMonthlySpends = Transactions.find({createdOn: {$gt:currentMonth.monthBegin,$lt:currentMonth.monthEnd}, transacted: category.name});
             catMonthlySpends.forEach(function(catMonthlySpend){
                 catSpend[category.name].push(catMonthlySpend.cardAmount);
             })
         });
-        // log(catSpend);
-        let thisMonthSpendings = Transactions.find({month: currentMonth, type: 'category'});
+        // log(catSpend); //!!!!!! THIS IS HUGE. RESULTS FROM ABOVE. TO USE LATER
+        let thisMonthSpendings = Transactions.find({createdOn: {$gt:currentMonth.monthBegin,$lt:currentMonth.monthEnd}, type: 'category'});
         return thisMonthSpendings
     },
 });
@@ -130,6 +128,13 @@ Template.spend.helpers({ //IS THIS USED?
     categories(){
         const categories = Amounts.find({type: 'category' });
         return categories
+    }
+});
+
+Template.bills.helpers({
+    bills(){
+        const bills = Amounts.find({type: 'bill'}, { sort: { date: 1 } });
+        return bills
     }
 });
 

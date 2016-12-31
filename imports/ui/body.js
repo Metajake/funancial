@@ -33,8 +33,13 @@ Template.body.events({
 
 
 Template.transaction_card.onCreated( function(){
-    this.transactionCategory = new ReactiveVar("");
+    Session.setDefaultPersistent("currentTransactionId", "income");
+    this.transactionCategory = new ReactiveVar(Session.get("currentTransactionId"));
 });
+
+Template.transaction_card.rendered = function(){
+    $('#amount-type').val(Template.instance().transactionCategory.get());
+},
 
 Template.transaction_card.helpers({
     category: function(){
@@ -44,7 +49,10 @@ Template.transaction_card.helpers({
 
 Template.transaction_card.events({
     'change #amount-type'(event, template){
-        template.transactionCategory.set(event.target.options[event.target.selectedIndex].value);
+        // template.transactionCategory.set(event.target.options[event.target.selectedIndex].value);
+        const transactionSelection = event.target.value;
+        Session.update("currentTransactionId", transactionSelection);
+        template.transactionCategory.set( transactionSelection );
     },
     'submit .new-amount'(event, template){
         event.preventDefault();
@@ -53,7 +61,7 @@ Template.transaction_card.events({
         const cardAmount = Number(target.amount.value);
         const type = target.type.value;
         const note = target.note.value;
-        if(type == 'save' || type == 'spend'){
+        if(type == 'save' || type == 'spend' || type == 'bills'){
             transacted = target.transacted.value;
             effector = Amounts.find({name:transacted});
             if(effector.count() > 1){
@@ -65,7 +73,7 @@ Template.transaction_card.events({
                     setEffected(effector, 'currentTotal', cardAmount);
                 }
             }
-            target.transacted.value = '';
+            // target.transacted.value = '';
         }
         Transactions.insert({
             cardAmount,
@@ -73,22 +81,16 @@ Template.transaction_card.events({
             note,
             transacted,
             createdOn: new Date(),
-            month: moment().format("YYYY MM"),
-            calendarDay: moment().format("YYYY-MM-DD"),
-            GCDay: moment().format("MM/DD/YY"),
-            week: moment().format("WW"),
+            month: moment().format("YYYY MM"), // I DONT THINK WE NEED THESE 12/30/16
+            // calendarDay: moment().format("YYYY-MM-DD"),
+            // GCDay: moment().format("MM/DD/YY"),
+            // week: moment().format("WW"),
         });
         target.amount.value = '';
         target.note.value = '';
-        target.type.value = '';
-        template.transactionCategory.set('');
-    },
-});
-
-Template.goals.helpers({
-    goals() {
-        const goals = Amounts.find({type:'goal'});
-        return goals
+        // target.type.value = template.transactionCategory.get();
+        // template.transactionCategory.set('');
+        // log(template.transactionCategory.get())
     },
 });
 
@@ -96,14 +98,22 @@ Template.goals.rendered = function(){
     let transactions = Transactions.find({type:'save'});
     let goalEvents = [];
     transactions.forEach(function(transaction){
-        goalEvents.push({title : transaction.transacted, start : transaction.calendarDay})
+        goalEvents.push({title : transaction.transacted, start : transaction.createdOn})
     });
     Meteor.setTimeout(function(){
         $('#goal-calendar').fullCalendar({
             events: goalEvents,
+            displayEventTime: false,
         });
-    }, 250);
+    }, 350);
 };
+
+Template.goals.helpers({
+    goals() {
+        const goals = Amounts.find({type:'goal'});
+        return goals
+    },
+});
 
 Template.goals.events({
     'submit .new-goal'(event){
@@ -120,8 +130,8 @@ Template.goals.events({
             type,
             total,
             createdOn: new Date(),
-            month: moment().format("YYYY MM"),
-            week: moment().format("WW"),
+            // month: moment().format("YYYY MM"), //I DONT THING WE NEED THESE 12/30/16
+            // week: moment().format("WW"),
         });
 
         target.amount.value = '';
@@ -134,12 +144,13 @@ Template.goals.events({
         ];
         inputs.forEach(function(input){
             dates.push([
-                input.GCDay,
+                input.createdOn.toLocaleDateString(),
                 input.cardAmount
             ]);
         });
+        log(dates);
         google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(function(){drawChart( new google.visualization.ColumnChart(document.getElementById('chart')), dates )});
+        google.charts.setOnLoadCallback(function(){ drawChart("Amount saved over time...", new google.visualization.ColumnChart(document.getElementById('chart')), dates )});
     },
     'click .delete'() {
         Amounts.remove(this._id);
@@ -152,7 +163,7 @@ Template.regularexpenses.onCreated( function() {
 Template.regularexpenses.rendered = function(){
     Meteor.setTimeout(function(){
         $('#monthlyexpenses').fullCalendar({
-            events: getMonthlyDates(),
+            events: getMonthlyDates('bill'),
             displayEventTime: false,
         });
     }, 300);
@@ -160,7 +171,7 @@ Template.regularexpenses.rendered = function(){
 
 Template.regularexpenses.helpers({
     dates(){
-        let dates = Dates.find({});
+        let dates = Amounts.find({}, {sort: { date: 1 } } );
         return dates
     },
 });
@@ -171,10 +182,12 @@ Template.regularexpenses.events({
         const name = event.target.name.value;
         const date = event.target.date.value;
         const amount = event.target.amount.value;
+        const type = 'bill';
 
-        Dates.insert({
+        Amounts.insert({
             name,
             date,
+            type,
             amount,
         });
 
@@ -185,7 +198,7 @@ Template.regularexpenses.events({
         rerenderCalendar('#monthlyexpenses', getMonthlyDates());
     },
     'click .delete'() {
-        Dates.remove(this._id);
+        Amounts.remove(this._id);
         rerenderCalendar('#monthlyexpenses', getMonthlyDates())
     },
 });
